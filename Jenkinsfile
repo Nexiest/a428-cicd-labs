@@ -1,40 +1,21 @@
-pipeline {
-    agent any
-
-    stages {
-        stage('Checkout') {
-            steps {
-                checkout scm
-            }
-        }
-
+node {
+    docker.image('node:16-buster-slim').inside("-p 3000:3000") {
         stage('Build') {
-            steps {
+            try {
                 sh 'npm install'
-
-                sh 'npm run build'
+            } catch (Exception e) {
+                currentBuild.result = 'FAILURE'
+                error "Build failed: ${e.message}"
             }
         }
 
         stage('Test') {
-            steps {
-                sh 'npm test'
+            try {
+                sh './jenkins/scripts/test.sh'
+            } catch (Exception e) {
+                currentBuild.result = 'FAILURE'
+                error "Tests failed: ${e.message}"
             }
-        }
-
-        stage('Deploy') {
-            steps {
-
-            }
-        }
-    }
-
-    post {
-        success {
-            echo 'Pipeline selesai tanpa kesalahan. Menjalankan langkah deploy...'
-        }
-        failure {
-            echo 'Pipeline gagal. Tidak ada langkah deploy yang dijalankan.'
         }
     }
 }
