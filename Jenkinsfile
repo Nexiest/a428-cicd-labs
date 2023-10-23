@@ -1,29 +1,28 @@
-node {
-    def dockerImage = 'node:16-buster-slim'
-    triggers {
-        pollSCM('*/2 * * * *') 
-    }
-    stage('Build') {
-        echo 'Building the project...'
-        try {
-            docker.image(dockerImage).inside("-p 3000:3000") {
+pipeline {
+    agent any
+
+    stages {
+        stage('Checkout') {
+            steps {
+                checkout scm
+            }
+        }
+
+        stage('Build') {
+            steps {
                 sh 'npm install'
             }
-        } catch (Exception e) {
-            currentBuild.result = 'FAILURE'
-            error "Build failed: ${e.message}"
         }
-    }
-    stage('Test') {
-        echo 'Running tests...'
-        try {
-            docker.image(dockerImage).inside("-p 3000:3000") {
-                sh './jenkins/scripts/test.sh'
+
+        stage('Test') {
+            steps {
+                sh 'npm test'
             }
-        } catch (Exception e) {
-            currentBuild.result = 'FAILURE'
-            error "Tests failed: ${e.message}"
+        }
+
+        stage('Deploy') {
+            steps {
+            }
         }
     }
-   
 }
