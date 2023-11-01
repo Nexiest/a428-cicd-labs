@@ -1,22 +1,26 @@
-node {
-    checkout scm 
-
-    docker.image('node:16-buster-slim').inside("-p 3000:3000") {
+pipeline {
+    agent {
+        docker {
+            image 'node:16-buster-slim'
+            args '-p 3000:3000'
+        }
+    }
+    stages {
         stage('Build') {
-            try {
+            steps {
                 sh 'npm install'
-            } catch (Exception e) {
-                currentBuild.result = 'FAILURE'
-                error "Build failed: ${e.message}"
             }
         }
-
         stage('Test') {
-            try {
+            steps {
                 sh './jenkins/scripts/test.sh'
-            } catch (Exception e) {
-                currentBuild.result = 'FAILURE'
-                error "Tests failed: ${e.message}"
+            }
+        }
+        stage('Deploy') { 
+            steps {
+                sh './jenkins/scripts/deliver.sh' 
+                input message: 'Sudah selesai menggunakan React App? (Klik "Proceed" untuk mengakhiri)' 
+                sh './jenkins/scripts/kill.sh' 
             }
         }
     }
