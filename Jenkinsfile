@@ -18,15 +18,14 @@ pipeline {
         }
         stage('Manual Approval') {
             steps {
-                input message: 'Apakah Anda menyetujui lanjutan?', submitter: 'operators'
+                input message: 'Apakah Anda menyetujui untuk dilanjutkan?', submitter: 'operators'
             }
         }
         stage('Deploy') {
             steps {
                 sh './jenkins/scripts/deliver.sh'
                 script {
-                    timeout(time: 60, unit: 'SECONDS') {
-                    }
+                    sleep time: 60, unit: 'SECONDS'
                 }
                 sh './jenkins/scripts/kill.sh'
             }
