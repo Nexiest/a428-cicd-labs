@@ -16,26 +16,11 @@ pipeline {
                 sh './jenkins/scripts/test.sh'
             }
         }
-        stage('Manual Approval') {
+        stage('Deploy') { 
             steps {
-                input message: 'Apakah Anda menyetujui lanjutan?', submitter: 'operators'
-            }
-        }
-        stage('Deploy') {
-            steps {
-                sh './jenkins/scripts/deliver.sh'
-            }
-        }
-        stage('Delay Execution') {
-            steps {
-                script {
-                    sleep time: 60, unit: 'SECONDS' 
-                }
-            }
-        }
-        stage('Terminate Application') {
-            steps {
-                sh './jenkins/scripts/kill.sh'
+                sh './jenkins/scripts/deliver.sh' 
+                input message: 'Sudah selesai menggunakan React App? (Klik "Proceed" untuk mengakhiri)' 
+                sh './jenkins/scripts/kill.sh' 
             }
         }
     }
