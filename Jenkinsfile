@@ -25,9 +25,10 @@ pipeline {
             steps {
                 sh './jenkins/scripts/deliver.sh'
                 script {
-                    sleep time: 60, unit: 'SECONDS' 
+                    timeout(time: 60, unit: 'SECONDS') {
+                    }
+                }
                 sh './jenkins/scripts/kill.sh'
-                }      
             }
         }
     }
