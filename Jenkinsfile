@@ -26,12 +26,8 @@ pipeline {
                 sh './jenkins/scripts/deliver.sh'
                 script {
                     sleep time: 60, unit: 'SECONDS' 
-                }
-            }
-        }
-        stage('Terminate Application') {
-            steps {
                 sh './jenkins/scripts/kill.sh'
+                }      
             }
         }
     }
