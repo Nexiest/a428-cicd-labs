@@ -24,10 +24,6 @@ pipeline {
         stage('Deploy') {
             steps {
                 sh './jenkins/scripts/deliver.sh'
-            }
-        }
-        stage('Delay Execution') {
-            steps {
                 script {
                     sleep time: 60, unit: 'SECONDS' 
                 }
